@@ -1,6 +1,7 @@
 
 <?php
-include "connect.php";
+    session_start();
+    include "connect.php";
     function createRow(){
         global $conn;
         if(isset($_POST['submit'])){
@@ -93,34 +94,47 @@ include "connect.php";
             }
         }
 
-// ==========================================================================
-function login($email,$password){
-    global $conn;
-    if(isset($_POST['login'])){
-        $password = mysqli_real_escape_string($conn, $password);
-        
-        $query = "SELECT * FROM users WHERE Email = '".$_POST['email']."'AND Password ='".$_POST['password']."'";  
-        $result = mysqli_query($conn, $query);
-        echo $query;
-        if(!$result){
-            die("query failed !!!".mysqli_error());
-        } 
-            while($row = mysqli_fetch_assoc($result)) {
-            $db_email = $row['email'];
-            $db_password = $row['password'];
-            $db_fullname = $row['fullname'];
-            if($password === $db_password && $email === $db_email){
-                $_SESSION['email'] = $db_email;
-                $_SESSION['fullname'] = $db_fullname;
-                header('location: /admin');
-            } else {
-                header('location: /login');
-            }
+    // ================================Login==========================================
+    function login($email,$password){
+        global $conn;
+        if(isset($_POST['login'])){
+            $password = mysqli_real_escape_string($conn, $password);
+            
+            $query = "SELECT * FROM users WHERE Email = '".$_POST['email']."'AND Password ='".$_POST['password']."'";  
+            $result = mysqli_query($conn, $query);
+            echo $query;
+            if(!$result){
+                die("query failed !!!".mysqli_error());
+            } 
+                while($row = mysqli_fetch_assoc($result)) {
+                $db_email = $row['email'];
+                $db_password = $row['password'];
+                $db_fullname = $row['fullname'];
+                if($password === $db_password && $email === $db_email){
+                    $_SESSION['s_email'] = $db_email;
+                    $_SESSION['s_fullname'] = $db_fullname;
+                    header('location: /project1/admin');
+                } else {
+                    header('location: /project1/login.php');
+                }
+            }           
+        }
+     }
 
-            }
-        
+    function checkLogin(){
+        if(isLogin()){
+            header('Localhost: /project1/admin');
+        }else{
+            header('Localhost: /project1');
+        }
     }
-}
+    function isLogin(){
+        if(isset($_SESSION['s_email'])){
+            return true;
+        }
+        return false;
+    }
+
 // ======================kết thúc phần login================================
 
 ?>
